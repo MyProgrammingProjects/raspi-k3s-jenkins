@@ -1,0 +1,6 @@
+apiVersion: v2
+name: custom-jenkins-chart
+description: A Helm chart for Kubernetes to Deploy Jenkins
+type: application
+version: 0.1.0
+appVersion: "2.541.3 LTS (2024-06-25)"

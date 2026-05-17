@@ -1,0 +1,47 @@
+# Default values for my-jenkins-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+appNamespace: jenkins
+appName: jenkins
+appTier: tools
+appContext: automation
+nodeHostname: tools
+
+image:
+  repository: jenkins/jenkins
+  tag: 2.541.3-lts@sha256:c4098086090ca98491d4bf66182f5e3b015a8232f2acf2df209a212a5801aa8e
+  pullPolicy: IfNotPresent
+
+container:
+  httpPort:
+    name: http
+    protocol: TCP
+    port: 8080
+    nodePort: 30000
+  agentsPort: 
+    name: agents
+    protocol: TCP
+    port: 50000
+  resources:
+    limits:
+      memory: "3Gi"
+      cpu: "1000m"
+    requests:
+      memory: "1Gi"
+      cpu: "500m"
+
+service:
+  type: NodePort
+  port: 8080
+  nodePort: 30000
+
+
+volume:
+  type: local
+  hostPath: "/mnt/jenkins"
+  capacity: 10Gi
+
+serviceAccount:
+  name: jenkins-admin

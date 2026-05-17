@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName }}
+  namespace: {{ .Values.appNamespace }}
+  labels: 
+    name: {{ .Values.appName }}
+    tier: {{ .Values.appTier }}
+    context: {{ .Values.appContext }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+      tier: {{ .Values.appTier }}
+      context: {{ .Values.appContext }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+        tier: {{ .Values.appTier }}
+        context: {{ .Values.appContext }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      nodeSelector:
+        kubernetes.io/hostname: {{ .Values.nodeHostname }}
+      # Fix permissions before Jenkins starts
+      initContainers:
+      - name: init-permissions
+        image: busybox:1.36
+        command: ["sh", "-c", "chown -R 1000:1000 /var/jenkins_home"]
+        securityContext:
+          runAsUser: 0                     # run as root to change ownership
+        volumeMounts:
+        - name: jenkins-data
+          mountPath: "/var/jenkins_home"
+      containers:
+      - name: {{ .Values.appName }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: {{ .Values.container.httpPort.name }}
+          protocol: {{ .Values.container.httpPort.protocol }}
+          containerPort: {{ .Values.container.httpPort.port }}
+          hostPort: {{ .Values.container.httpPort.port }}
+        - name: {{ .Values.container.agentsPort.name }}
+          protocol: {{ .Values.container.agentsPort.protocol }}
+          containerPort: {{ .Values.container.agentsPort.port }}
+          hostPort: {{ .Values.container.agentsPort.port }}
+        resources:
+          limits:
+            memory: {{ .Values.container.resources.limits.memory }}
+            cpu: {{ .Values.container.resources.limits.cpu }}
+          requests:
+            memory: {{ .Values.container.resources.requests.memory }}
+            cpu: {{ .Values.container.resources.requests.cpu }}
+        volumeMounts:
+        - name: jenkins-data
+          mountPath: "/var/jenkins_home"
+      volumes:
+      - name: jenkins-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.appName }}-pvc
