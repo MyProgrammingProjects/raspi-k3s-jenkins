@@ -66,7 +66,7 @@ The purpose was educational:
 - node selectors,
 - and deployment composition.
 
-The chart, which can be found [here](https://github.com/MyProgrammingProjects/raspi-k3s-jenkins/custom-chart/), currently manages:
+The chart, which can be found [here](https://github.com/MyProgrammingProjects/raspi-k3s-jenkins/tree/main/custom-chart), currently manages:
 - PersistentVolume
 - PersistentVolumeClaim
 - Service
@@ -425,21 +425,17 @@ pipeline {
              steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh-jenkins',keyFileVariable: 'SSH_KEY')]) {
                 dir('infra-repo') {
-                        checkout([
-                            $class: 'GitSCM',
-                            branches: [[name: '*/develop']],
-                            userRemoteConfigs: [[
-                                url: "{env.INFRA_GITHUB_REPOSITORY}",
-                                credentialsId: 'github-ssh'
-                            ]]
-                        ])
-                    }
+                   sh """
+                   export GIT_SSH_COMMAND="ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no"
+                   git clone git@github.com:${env.INFRA_GITHUB_REPOSITORY} --branch ${env.BRANCH_NAME} .
+                   """
+                    }       
                 }
             }
         }
-        
+
         //Using existing GitOps repository values.yml file, adjust image 
-        stage('Adjust Image name') {
+         stage('Adjust Image name') {
             steps {
                 dir('infra-repo') {
                     container('auxiliary') {
@@ -459,6 +455,7 @@ pipeline {
                 withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh-jenkins',keyFileVariable: 'SSH_KEY')]) {
                 dir('infra-repo') {
                    sh """
+                   cat ${env.HELM_VALUES_PATH}
                    export GIT_SSH_COMMAND="ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no"
 
                    # Commit & push
@@ -467,7 +464,7 @@ pipeline {
 
                     git add ${env.HELM_VALUES_PATH}
                     git commit -m "adjusted image name to ${env.FULL_IMAGE}"
-                    git remote set-url origin git@github.com:${env.CODE_GITHUB_REPOSITORY}
+                    git remote set-url origin git@github.com:${env.INFRA_GITHUB_REPOSITORY}
                     git push origin HEAD:${env.BRANCH_NAME}
 
                    """
