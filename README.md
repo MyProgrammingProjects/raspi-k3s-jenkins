@@ -740,6 +740,23 @@ Official documentation and resources consulted during this project include:
 
 Additional community resources were also used for troubleshooting and implementation comparisons.
 
+---
+
+
+## Known Observations
+
+### Jenkins Ephemeral Agents and Image Pulls
+
+During testing, auxiliary container images were frequently pulled when new agent pods were created.
+
+Potential contributing factors:
+
+- Ephemeral Kubernetes agent pods
+- Scheduling on different cluster nodes
+- Image pull policy configuration
+- Container runtime image cache availability
+
+Further investigation is required to determine the precise cause and whether image pre-pulling or local registry caching would improve startup times.
 
 
 
