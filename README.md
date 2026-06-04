@@ -573,6 +573,24 @@ The detailed application pipelines and shared Jenkins libraries will be document
 
 One interesting aspect is that pipeline execution result could also be seen on the GitHub repository.
 
+---
+
+## Application-Specific Pipelines
+
+This repository documents the Jenkins platform architecture, shared pipeline strategy, ephemeral agent implementation, and common CI/CD workflow used throughout the Home Lab.
+
+However, the individual pipeline implementations for each application are maintained separately in the [`raspi-k3s-applications`](https://github.com/MyProgrammingProjects/raspi-k3s-applications) repository.
+
+Those pipelines contain application-specific details such as:
+
+* build configuration,
+* container image generation,
+* deployment manifest updates,
+* and service-specific CI/CD requirements.
+
+
+
+For the detailed implementation of each application pipeline, refer to the Jenkins directory in the [`raspi-k3s-applications`](https://github.com/MyProgrammingProjects/raspi-k3s-applications) repository.
 
 ---
 
