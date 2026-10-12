@@ -3,6 +3,9 @@ def login(String azClientId,
             String azTenantId,
             String acrName) {
     sh """
+
+                    # https://matthiasguentert.net/how-to-log-into-an-azure-container-registry-using-podman-cli/
+
                     az login --service-principal \
                         --username ${azClientId} \
                         --password ${azClientSecret} \
@@ -11,20 +14,14 @@ def login(String azClientId,
                     TOKEN=\$(az acr login --name ${acrName} --expose-token --query accessToken -o tsv)
 
 
-                    mkdir -p /root/.docker
+                    mkdir -p /root/acr
                     # The username must be: The username must be:
                     # This is a special value required by ACR when using tokens (Microsoft Docs)
-                    cat > /root/.docker/config.json <<EOF
-                    {
-                        "auths": {
-                            "${acrName}.azurecr.io": {
-                            "username": "00000000-0000-0000-0000-000000000000",
-                            "password": "\$TOKEN"
-                            }
-                        }
-                    }
-EOF
-# EOF must start at column 0, it cannot have indentation
+                    
+                    echo "${acrName}.azurecr.io" > /root/acr/acr.txt
+                    echo "00000000-0000-0000-0000-000000000000" > /root/acr/username.txt
+                    echo "\$TOKEN" > /root/acr/token.txt
+
 """
 }
 
