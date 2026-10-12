@@ -744,7 +744,7 @@ Examples include:
 - ACR login logic
 - container image build/publish logic
 
-This reduced duplication while keeping the pipeline behavior explicit. These can be found in the [vars](https://github.com/MyProgrammingProjects/raspi-k3s-jenkins/vars/) folder .
+This reduced duplication while keeping the pipeline behavior explicit. These can be found in the [vars](https://github.com/MyProgrammingProjects/raspi-k3s-jenkins/tree/main/vars) folder .
 
 ### Shared volumes
 
